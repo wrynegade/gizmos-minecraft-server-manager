@@ -1,0 +1,27 @@
+#!/bin/zsh
+source ./env
+
+WORLD_NAME=$(\
+	ls "$UNIVERSE_PATH"\
+	| grep -v "$WORLD"\
+	| grep -v 'usercache'\
+	| fzf $FZF_OPTIONS --print-query --prompt 'choose a world (or create a new world) : '\
+	| tail -1\
+)
+
+[[ "$WORLD_NAME" == "$WORLD" ]] || [[ "$WORLD_NAME" == "usercache.json" ]] && {
+	echo "\\033[31m'$WORLD_NAME' is a keyword; choose another name\\033[0m";
+	exit 1;
+}
+
+[ ! $WORLD_NAME ] && {
+	echo "\\033[31mNo world selected\\033[0m";
+	exit 1;
+}
+
+[ ! -d "$UNIVERSE_PATH/$WORLD_NAME" ] && mkdir "$UNIVERSE_PATH/$WORLD_NAME"
+rm "$UNIVERSE_PATH/$WORLD" 2>/dev/null;
+
+ln -s "$UNIVERSE_PATH/$WORLD_NAME" "$UNIVERSE_PATH/$WORLD" \
+	&& echo "\\033[92mSuccessfully changed world to '$WORLD_NAME'\\033[0m" \
+	|| echo "\\033[31mError linking world. Check symlink location.\\033[0m";

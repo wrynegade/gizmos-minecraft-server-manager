@@ -1,0 +1,38 @@
+#!/bin/zsh
+source ./env
+
+echo '\033[33mGetting version information\033[0m'
+VERSION_MANIFEST=$(wget -O - "$VERSION_MANIFEST_URL" 2>/dev/null)
+[ ! "$VERSION_MANIFEST" ] && {
+	echo '\033[31mUnable to obtain version manifest\033[0m';
+	exit 2;
+}
+
+LATEST_VERSION=$(echo "$VERSION_MANIFEST" | jq .latest.release -r)
+
+[ "$LATEST_VERSION" ] || [ "$LATEST_VERSION" == 'null' ] || {
+	echo '\033[31mUnable to obtain version information\033[0m';
+	exit 1;
+}
+
+echo "\\033[32mLatest Version : \\033[35m$LATEST_VERSION\\033[0m"
+
+LOCAL_JAR="$VERSIONS_PATH/$LATEST_VERSION.jar"
+[ -f "$LOCAL_JAR" ] && {
+	echo "\\033[32mVersion $LATEST_VERSION already installed\\033[0m"
+} || {
+	echo '\033[33mDownloading latest version...\033[0m'
+	LATEST_URL=$(echo "$VERSION_MANIFEST" | jq ".versions[] | select(.id == \"$LATEST_VERSION\") | .url" -r)
+	DOWNLOAD_URL=$(wget -O - "$LATEST_URL" 2>/dev/null | jq .downloads.server.url -r)
+	
+	wget -O "$LOCAL_JAR" "$DOWNLOAD_URL" 2>/dev/null\
+		&& echo "\\033[32mSuccessfully downloaded version $LATEST_VERSION\\033[0m"\
+		|| echo "\\033[31mError downloading from '$DOWNLOAD_URL'\\033[0m"\
+		|| exit 2;
+}
+
+echo '\033[33mInstalling latest version...\033[0m'
+rm "$SERVER_JAR" 2>/dev/null;
+ln -s "$LOCAL_JAR" "$SERVER_JAR" \
+	&& echo "\\033[92mSuccessfully installed version $LATEST_VERSION\\033[0m" \
+	|| echo "\\033[31mError installing server.jar. Check symlink location.\\033[0m";

@@ -1,0 +1,32 @@
+#!/bin/zsh
+
+MISSING_DEPENDENCIES=0
+jq  --version >/dev/null 2>&1  || { echo '\033[031mjq required (github.com/stedolan/jq)\033[0m'  ; ((MISSING_DEPENDENCIES+=1));}
+fzf --version >/dev/null 2>&1  || { echo '\033[031mfzf required (github.com/juengunn/fzf)\033[0m'; ((MISSING_DEPENDENCIES+=1));}
+java --version >/dev/null 2>&1 || { echo '\033[031mjre required (openjdk.java.net)\033[0m'       ; ((MISSING_DEPENDENCIES+=1));}
+wget --version >/dev/null 2>&1 || { echo '\033[031mwget required (gnu.org/software/wget)\033[0m' ; ((MISSING_DEPENDENCIES+=1));}
+
+[ "$MISSING_DEPENDENCIES" -gt 0 ] && exit "$MISSING_DEPENDENCIES";
+
+FZF_OPTIONS=(--height 10 --layout=reverse --tac)
+
+VERSION_MANIFEST_URL='https://launchermeta.mojang.com/mc/game/version_manifest.json'
+
+MANAGER_PATH="$(pwd)"
+VERSIONS_PATH="$MANAGER_PATH/versions"
+SERVER_PATH="$MANAGER_PATH/server"
+UNIVERSE_PATH="$MANAGER_PATH/worlds"
+
+WORLD="active"
+
+SERVER_JAR="$SERVER_PATH/server.jar"
+SERVER_PORT='25565'
+SERVER_INITIAL_MEMORY_SIZE='512M'
+SERVER_MAXIMUM_MEMORY_SIZE='2G'
+
+LOCAL_OVERRIDE="$HOME/.config/gizmos/minecraft-server-manager.conf"
+[ -f "$LOCAL_OVERRIDE" ] && source "$LOCAL_OVERRIDE"
+
+[ ! -d "$VERSIONS_PATH" ] && mkdir "$VERSIONS_PATH";
+[ ! -d "$SERVER_PATH" ] && mkdir "$SERVER_PATH"
+[ ! -d "$UNIVERSE_PATH" ] && mkdir "$UNIVERSE_PATH";
