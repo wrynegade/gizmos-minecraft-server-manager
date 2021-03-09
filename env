@@ -1,10 +1,13 @@
 #!/bin/zsh
 
+[ "$EUID" -eq 0 ] && { echo '\033[031mCannot run as root\033[0m'; exit 69 }
+
 MISSING_DEPENDENCIES=0
 jq  --version >/dev/null 2>&1  || { echo '\033[031mjq required (github.com/stedolan/jq)\033[0m'  ; ((MISSING_DEPENDENCIES+=1));}
 fzf --version >/dev/null 2>&1  || { echo '\033[031mfzf required (github.com/juengunn/fzf)\033[0m'; ((MISSING_DEPENDENCIES+=1));}
 java --version >/dev/null 2>&1 || { echo '\033[031mjre required (openjdk.java.net)\033[0m'       ; ((MISSING_DEPENDENCIES+=1));}
 wget --version >/dev/null 2>&1 || { echo '\033[031mwget required (gnu.org/software/wget)\033[0m' ; ((MISSING_DEPENDENCIES+=1));}
+mcrcon -h >/dev/null 2>&1 || { echo '\033[031mmcrcon required (github.com/Tiiffi/mcrcon)\033[0m' ; ((MISSING_DEPENDENCIES+=1));}
 
 [ "$MISSING_DEPENDENCIES" -gt 0 ] && exit "$MISSING_DEPENDENCIES";
 
@@ -23,6 +26,10 @@ SERVER_JAR="$SERVER_PATH/server.jar"
 SERVER_PORT='25565'
 SERVER_INITIAL_MEMORY_SIZE='512M'
 SERVER_MAXIMUM_MEMORY_SIZE='2G'
+
+MC_RCON_PASSWORD=''
+MC_RCON_HOST='127.0.0.1'
+MC_RCON_PORT='25575'
 
 LOCAL_OVERRIDE="$HOME/.config/gizmos/minecraft-server-manager.conf"
 [ -f "$LOCAL_OVERRIDE" ] && source "$LOCAL_OVERRIDE"

@@ -1,0 +1,5 @@
+#!/bin/zsh
+source ./env
+
+MCRCON_PASS="$MC_RCON_PASSWORD" MCRCON_HOST="$MC_RCON_HOST" MCRCON_PORT="$MC_RCON_PORT" \
+	mcrcon save-all stop;

@@ -6,4 +6,5 @@ java \
 	"-Xms$SERVER_INITIAL_MEMORY_SIZE" "-Xmx$SERVER_MAXIMUM_MEMORY_SIZE" \
 	-jar "server.jar" --nogui \
 	--universe "$UNIVERSE_PATH" --world "$WORLD"\
+	--port "$SERVER_PORT"
 	;
