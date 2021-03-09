@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+SERVICE="$(pwd)/MinecraftServer.service"
+LOCAL_SERVICE="$HOME/.config/systemd/user/MinecraftServer.service"
+
+ln -s "$SERVICE" "$LOCAL_SERVICE"
