@@ -56,10 +56,6 @@ MINECRAFT_RCON() {
 	[ ! $HOST ] && HOST='127.0.0.1'
 	[ ! $PORT ] && PORT='25575'
 
-	echo $PASS
-	echo $HOST
-	echo $PORT
-
 	local ARGS;
 
 	case $1 in;
