@@ -31,7 +31,7 @@ MC_RCON_PASSWORD=''
 MC_RCON_HOST='127.0.0.1'
 MC_RCON_PORT='25575'
 
-LOCAL_OVERRIDE="$HOME/.config/gizmos/minecraft-server-manager.conf"
+[ ! "$LOCAL_OVERRIDE" ] && LOCAL_OVERRIDE="$HOME/.config/gizmos/minecraft-server-manager.conf"
 [ -f "$LOCAL_OVERRIDE" ] && source "$LOCAL_OVERRIDE"
 
 [ ! -d "$VERSIONS_PATH" ] && mkdir "$VERSIONS_PATH";
