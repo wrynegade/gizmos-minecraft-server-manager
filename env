@@ -2,14 +2,30 @@
 
 [ "$EUID" -eq 0 ] && { echo '\033[031mCannot run as root\033[0m'; exit 69 }
 
-MISSING_DEPENDENCIES=0
-jq  --version >/dev/null 2>&1  || { echo '\033[031mjq required (github.com/stedolan/jq)\033[0m'  ; ((MISSING_DEPENDENCIES+=1));}
-fzf --version >/dev/null 2>&1  || { echo '\033[031mfzf required (github.com/juengunn/fzf)\033[0m'; ((MISSING_DEPENDENCIES+=1));}
-java --version >/dev/null 2>&1 || { echo '\033[031mjre required (openjdk.java.net)\033[0m'       ; ((MISSING_DEPENDENCIES+=1));}
-wget --version >/dev/null 2>&1 || { echo '\033[031mwget required (gnu.org/software/wget)\033[0m' ; ((MISSING_DEPENDENCIES+=1));}
-mcrcon -h >/dev/null 2>&1 || { echo '\033[031mmcrcon required (github.com/Tiiffi/mcrcon)\033[0m' ; ((MISSING_DEPENDENCIES+=1));}
+#####################################################################
 
-[ "$MISSING_DEPENDENCIES" -gt 0 ] && exit "$MISSING_DEPENDENCIES";
+DEPENDENCIES=(jq fzf wget mcrcon java)
+
+for DEP in $DEPENDENCIES
+do
+	LINK=''
+	case $DEP in
+		jq     ) LINK='(https://github.com/stedolan/jq)' ;;
+		fzf    ) LINK='(https://github.com/junegunn/fzf)' ;;
+		wget   ) LINK='(https://gnu.org/software/wget)' ;;
+		mcrcon ) LINK='(https://github.com/Tiiffi/mcrcon)' ;;
+		java   ) LINK='(https://openjdk.java.net)' ;;
+	esac
+
+	command -v $DEP >/dev/null 2>&1 || {
+		printf "\033[031m%s required %s\033[0m\n" "$DEP" "$LINK" >&2
+		((MISSING_DEPENDENCIES+=1))
+	}
+done
+
+[ $MISSING_DEPENDENCIES ] && exit $MISSING_DEPENDENCIES
+
+#####################################################################
 
 JAVA=$(which java)
 
@@ -34,8 +50,12 @@ MCRCON_PASS=''
 MCRCON_HOST='127.0.0.1'
 MCRCON_PORT='25575'
 
+#####################################################################
+
 [ ! "$LOCAL_OVERRIDE" ] && LOCAL_OVERRIDE="$HOME/.config/gizmos/minecraft-server-manager.conf"
 [ -f "$LOCAL_OVERRIDE" ] && source "$LOCAL_OVERRIDE"
+
+#####################################################################
 
 [ ! -d "$VERSIONS_PATH" ] && mkdir "$VERSIONS_PATH";
 [ ! -d "$SERVER_PATH" ] && mkdir "$SERVER_PATH"
