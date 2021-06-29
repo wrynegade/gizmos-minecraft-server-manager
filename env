@@ -11,6 +11,8 @@ mcrcon -h >/dev/null 2>&1 || { echo '\033[031mmcrcon required (github.com/Tiiffi
 
 [ "$MISSING_DEPENDENCIES" -gt 0 ] && exit "$MISSING_DEPENDENCIES";
 
+JAVA=$(which java)
+
 FZF_OPTIONS=(--height 10 --layout=reverse --tac)
 
 VERSION_MANIFEST_URL='https://launchermeta.mojang.com/mc/game/version_manifest.json'
@@ -19,6 +21,7 @@ MANAGER_PATH="$(pwd)"
 VERSIONS_PATH="$MANAGER_PATH/versions"
 SERVER_PATH="$MANAGER_PATH/server"
 UNIVERSE_PATH="$MANAGER_PATH/worlds"
+MOD_PATH="$MANAGER_PATH/mods"
 
 WORLD="active"
 
@@ -27,9 +30,9 @@ SERVER_PORT='25565'
 SERVER_INITIAL_MEMORY_SIZE='512M'
 SERVER_MAXIMUM_MEMORY_SIZE='2G'
 
-MC_RCON_PASSWORD=''
-MC_RCON_HOST='127.0.0.1'
-MC_RCON_PORT='25575'
+MCRCON_PASS=''
+MCRCON_HOST='127.0.0.1'
+MCRCON_PORT='25575'
 
 [ ! "$LOCAL_OVERRIDE" ] && LOCAL_OVERRIDE="$HOME/.config/gizmos/minecraft-server-manager.conf"
 [ -f "$LOCAL_OVERRIDE" ] && source "$LOCAL_OVERRIDE"
@@ -37,3 +40,5 @@ MC_RCON_PORT='25575'
 [ ! -d "$VERSIONS_PATH" ] && mkdir "$VERSIONS_PATH";
 [ ! -d "$SERVER_PATH" ] && mkdir "$SERVER_PATH"
 [ ! -d "$UNIVERSE_PATH" ] && mkdir "$UNIVERSE_PATH";
+
+export MCRCON_HOST MCRCON_PASS MCRCON_PORT

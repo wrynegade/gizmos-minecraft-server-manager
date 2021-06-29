@@ -1,5 +1,5 @@
 #!/bin/zsh
-source ./env
+source ${0:a:h}/env
 
 echo '\033[33mGetting version information\033[0m'
 VERSION_MANIFEST=$(wget -O - "$VERSION_MANIFEST_URL" 2>/dev/null)

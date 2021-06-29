@@ -1,0 +1,18 @@
+#!/usr/bin/zsh
+source ${0:a:h}/env
+
+[ -d $MOD_PATH ] && [ $(ls "$MOD_PATH" | wc -l) -gt 0 ] \
+    || { echo '\033[31mNo mods available\033[0m'; exit 1 }
+
+MOD_NAME=$(\
+	ls "$MOD_PATH" \
+	| grep -v "$(ls $SERVER_PATH/mods | tr '\n' '\\|' | sed 's/\\$//; s/\\/\\|/g')" \
+	| fzf $FZF_OPTIONS --prompt 'choose a mod to activate : '\
+)
+
+[ ! $MOD_NAME ] && exit 2;
+
+ln -s "$MOD_PATH/$MOD_NAME" "$SERVER_PATH/mods/$MOD_NAME" 2>/dev/null \
+	&& echo "\\033[92mSuccessfully activated mod '$MOD_NAME'\\033[0m" \
+	|| echo "\\033[31mError activating mod. Is it already active?\\033[0m" \
+	;

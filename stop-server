@@ -1,5 +1,5 @@
 #!/bin/zsh
-source ./env
+source ${0:a:h}/env
 
-MCRCON_PASS="$MC_RCON_PASSWORD" MCRCON_HOST="$MC_RCON_HOST" MCRCON_PORT="$MC_RCON_PORT" \
-	mcrcon save-all stop;
+echo 'stopping server'
+mcrcon save-all stop 2>&1 || echo 'server stop failed; is the server running?'
