@@ -1,0 +1,17 @@
+#!/bin/zsh
+CHECK_INTERVAL_SECONDS=20
+RCON="${0:a:h}/../rcon"
+
+CHECK_CONNECTION() {
+	$RCON 'time query day' 2>/dev/null | grep -q '[0-9]'
+}
+
+echo "script : ${0}"
+while true
+do
+	CHECK_CONNECTION && {
+		CONNECTED=1
+		$RCON
+	} || echo "awaiting $([ $CONNECTED ] && echo re)connection..."
+	sleep $CHECK_INTERVAL_SECONDS
+done

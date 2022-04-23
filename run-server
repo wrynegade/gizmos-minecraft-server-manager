@@ -5,6 +5,6 @@ cd "$SERVER_PATH";
 $JAVA \
 	"-Xms$SERVER_INITIAL_MEMORY_SIZE" "-Xmx$SERVER_MAXIMUM_MEMORY_SIZE" \
 	-jar "$SERVER_PATH/server.jar" --nogui \
-	--universe "$UNIVERSE_PATH" --world "$WORLD"\
-	--port "$SERVER_PORT"
+	--universe "$UNIVERSE_PATH" --world "$WORLD" \
+	--port "$SERVER_PORT" \
 	;

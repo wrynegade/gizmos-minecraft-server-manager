@@ -1,0 +1,48 @@
+#!/bin/zsh
+CHECK_INTERVAL_SECONDS=1
+RCON="${0:a:h}/../rcon"
+
+ENTITIES=(creeper skeleton zombie spider drowned husk stray)
+
+KILL() {
+	[ ! $1 ] && return
+	$RCON "kill @e[type=$1]" | sed 's/^[^0-9]*\([0-9]*\).*$/\1/'
+}
+
+echo "script : ${0}"
+while true
+do
+	CURRENT_TIME=$($RCON 'time query daytime' 2>/dev/null | sed 's/^[^0-9]*\([0-9]*\).*$/\1/')
+	[[ $CURRENT_TIME =~ ^[0-9]+$ ]] && {
+		[ ! $DELETED_TODAY ] && [[ $CURRENT_TIME -le 2000 ]] && {
+			ENTITY_REPORT=''
+			echo 'clearing entities...'
+			for ENTITY in $ENTITIES
+			do
+				unset COUNT
+				COUNT=$(KILL $ENTITY)
+				[ $COUNT ] && [[ $COUNT -gt 0 ]] && {
+					case $ENTITY in
+						creeper ) COLOR='green';;
+						skeleton ) COLOR='white';;
+						zombie ) COLOR='dark_green' ;;
+						spider ) COLOR='dark_purple';;
+						drowned ) COLOR='dark_blue';;
+						husk ) COLOR='orange';;
+						stray ) COLOR='purple' ;;
+					esac
+					echo "\tremoved $COUNT $ENTITY(s)"
+					[ ! $ENTITY_REPORT ] && ENTITY_REPORT='{"text":"elminated:","bold":true}'
+					ENTITY_REPORT="$ENTITY_REPORT,{\"text\":\"\\n   $COUNT $ENTITY(s)\",\"italic\":true,\"bold\":false,\"color\":\"$COLOR\"}"
+				}
+			done
+			[ $ENTITY_REPORT ] && ENTITY_REPORT=", \"hoverEvent\":{\"action\":\"show_text\",\"contents\":[$ENTITY_REPORT]}"
+
+			$RCON "tellraw @a {\"text\":\"keeping the server safe...\",\"bold\":true,\"color\":\"blue\"$ENTITY_REPORT}"
+			DELETED_TODAY=1
+			echo '...done'
+		}
+		[[ $CURRENT_TIME -gt 2000 ]] && unset DELETED_TODAY
+	}
+	sleep $CHECK_INTERVAL_SECONDS
+done

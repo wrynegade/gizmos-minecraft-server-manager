@@ -2,4 +2,4 @@
 source ${0:a:h}/env
 
 echo 'stopping server'
-mcrcon save-all stop 2>&1 || echo 'server stop failed; is the server running?'
+mcrcon stop 2>&1 && { sleep 5; } || echo 'server stop failed; is the server running?'
