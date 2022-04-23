@@ -2,6 +2,24 @@
 source ${0:a:h}/env
 
 cd "$SERVER_PATH";
+
+[ ! -f $SERVER_PATH/eula.txt ] && echo 'eula=true' > $SERVER_PATH/eula.txt
+
+[ -f $SERVER_PATH/server.properties ] && sed -i "\
+	s/^\\(enable-query\\)=.*$/\1=true/; \
+	s/^\\(enable-rcon\\)=.*$/\1=true/; \
+	s/^\\(enable-status\\)=.*$/\1=true/; \
+	s/^\\(spawn-protection\\)=.*$/\1=0/; \
+	s/^\\(motd\\)=.*$/\1=$MOTD/; \
+	s/^\\(difficulty\\)=.*$/\1=normal/; \
+	s/^\\(query.port\\)=.*$/\1=$SERVER_PORT/; \
+	s/^\\(server-port\\)=.*$/\1=$SERVER_PORT/; \
+	s/^\\(rcon.port\\)=.*$/\1=$MCRCON_PORT/; \
+	s/^\\(rcon.password\\)=.*$/\1=$MCRCON_PASS/; \
+	s/^\\(white-list\\)=.*$/\1=true/; \
+	s/^\\(enforce-whitelist\\)=.*$/\1=true/; \
+" $SERVER_PATH/server.properties
+
 $JAVA \
 	"-Xms$SERVER_INITIAL_MEMORY_SIZE" "-Xmx$SERVER_MAXIMUM_MEMORY_SIZE" \
 	-jar "$SERVER_PATH/server.jar" --nogui \

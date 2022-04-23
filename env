@@ -1,5 +1,4 @@
 #!/bin/zsh
-
 [ "$EUID" -eq 0 ] && { echo '\033[031mCannot run as root\033[0m'; exit 69 }
 
 #####################################################################
@@ -11,6 +10,7 @@ do
 	LINK=''
 	case $DEP in
 		jq     ) LINK='(https://github.com/stedolan/jq)' ;;
+		yq     ) LINK='(https://github.com/mikefarah/yq)' ;;
 		fzf    ) LINK='(https://github.com/junegunn/fzf)' ;;
 		wget   ) LINK='(https://gnu.org/software/wget)' ;;
 		mcrcon ) LINK='(https://github.com/Tiiffi/mcrcon)' ;;
@@ -27,38 +27,33 @@ done
 
 #####################################################################
 
-JAVA=$(which java)
+[ ! $JAVA ] && JAVA=$(which java)
+[ ! $DATA_PATH ] && DATA_PATH="${0:a:h}"
+
+[ ! $SERVER_PORT ] && SERVER_PORT='25565'
+[ ! $SERVER_INITIAL_MEMORY_SIZE ] && SERVER_INITIAL_MEMORY_SIZE='512M'
+[ ! $SERVER_MAXIMUM_MEMORY_SIZE ] && SERVER_MAXIMUM_MEMORY_SIZE='2G'
+
+[ ! $MCRCON_PASS ] && MCRCON_PASS=''
+[ ! $MCRCON_HOST ] && MCRCON_HOST='127.0.0.1'
+[ ! $MCRCON_PORT ] && MCRCON_PORT='25575'
+
+export MCRCON_HOST MCRCON_PASS MCRCON_PORT
+
+#####################################################################
 
 FZF_OPTIONS=(--height 10 --layout=reverse --tac)
-
 VERSION_MANIFEST_URL='https://launchermeta.mojang.com/mc/game/version_manifest.json'
-
-MANAGER_PATH="$(pwd)"
-VERSIONS_PATH="$MANAGER_PATH/versions"
-SERVER_PATH="$MANAGER_PATH/server"
-UNIVERSE_PATH="$MANAGER_PATH/worlds"
-MOD_PATH="$MANAGER_PATH/mods"
 
 WORLD="active"
 
+VERSIONS_PATH="$DATA_PATH/versions"
+SERVER_PATH="$DATA_PATH/server"
+UNIVERSE_PATH="$DATA_PATH/worlds"
+MOD_PATH="$DATA_PATH/mods"
+
+[ ! -d "$VERSIONS_PATH" ] && mkdir -p "$VERSIONS_PATH"
+[ ! -d "$SERVER_PATH" ] && mkdir -p "$SERVER_PATH"
+[ ! -d "$UNIVERSE_PATH" ] && mkdir -p "$UNIVERSE_PATH"
+
 SERVER_JAR="$SERVER_PATH/server.jar"
-SERVER_PORT='25565'
-SERVER_INITIAL_MEMORY_SIZE='512M'
-SERVER_MAXIMUM_MEMORY_SIZE='2G'
-
-MCRCON_PASS=''
-MCRCON_HOST='127.0.0.1'
-MCRCON_PORT='25575'
-
-#####################################################################
-
-[ ! "$LOCAL_OVERRIDE" ] && LOCAL_OVERRIDE="$HOME/.config/gizmos/minecraft-server-manager.conf"
-[ -f "$LOCAL_OVERRIDE" ] && source "$LOCAL_OVERRIDE"
-
-#####################################################################
-
-[ ! -d "$VERSIONS_PATH" ] && mkdir "$VERSIONS_PATH";
-[ ! -d "$SERVER_PATH" ] && mkdir "$SERVER_PATH"
-[ ! -d "$UNIVERSE_PATH" ] && mkdir "$UNIVERSE_PATH";
-
-export MCRCON_HOST MCRCON_PASS MCRCON_PORT
